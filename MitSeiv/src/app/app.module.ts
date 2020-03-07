@@ -1,3 +1,5 @@
+import { ManagerUserService } from './services/managerUser/manager-user.service';
+import { BaseDeDatos } from 'src/app/interfaceServicios/baseDeDatos';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
@@ -36,7 +38,8 @@ import { AngularFireAuthModule } from '@angular/fire/auth';
     Geolocation,
     AngularFirestore,
     AngularFireAuthModule,
-    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
+    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    { provide: BaseDeDatos, useClass: ManagerUserService}
   ],
   bootstrap: [AppComponent]
 })

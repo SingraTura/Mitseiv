@@ -84,7 +84,7 @@ export class HomePage {
     return password === confirmPassword ? null : { passwordNotMatch: true };
   }
   onSubmit() {
-    this.mu.signUp(this.registerForm.value.email, this.registerForm.value.password).then(() => {
+    this.mu.registrar(this.registerForm.value.email, this.registerForm.value.password).then(() => {
       console.log('creado');
     }).catch(() => {
       console.log('fallo');
