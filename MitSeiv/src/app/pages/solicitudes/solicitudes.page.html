@@ -8,7 +8,7 @@
     <ion-card>
       <ion-card-header color="warning">
         <ion-card-subtitle>Agrega un amigo</ion-card-subtitle>
-        <ion-input type="text" placeholder="Escribe aqui el Correo Electronico"></ion-input>
+        <ion-input type="text" placeholder="Escribe aqui el Correo Electronico" [(ngModel)]="this.email"></ion-input>
         <ion-button (click)="enviar()" expand="block" fill="clear" shape="round">
           Enviar solicitud
         </ion-button>
@@ -17,12 +17,12 @@
   <ion-item>
     <ion-label>Solicitudes de amistad</ion-label>
   </ion-item>
-  <ion-item>
-    <ion-label>javier@gmail.com</ion-label>
-    <ion-button (click)="aceptar()" expand="block" color="tertiary">
+  <ion-item *ngFor="let emailList of listaAmigos()">
+    <ion-label>{{emailList}}</ion-label>
+    <ion-button (click)="aceptar(emailList)" expand="block" color="tertiary">
       V
     </ion-button>
-    <ion-button (click)="rechazar()" expand="block"  color="danger">
+    <ion-button (click)="rechazar(emailList)" expand="block"  color="danger">
       X
     </ion-button>
   </ion-item>

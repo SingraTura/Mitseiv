@@ -18,6 +18,7 @@ export class InicioSesionPage implements OnInit {
     this.base.iniciarSesion(this.correo, this.contrasena).then(r => {
       if (r) {
         console.log('correcto');
+        this.router.navigate(['solicitudes']);
       } else {
         console.log('fallo');
       }

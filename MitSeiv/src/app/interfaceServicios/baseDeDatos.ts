@@ -9,4 +9,6 @@ export abstract class BaseDeDatos {
     abstract capturarUsuario(uid: string): Usuario;
     abstract actualizarUsuario(nombre: string, direccion: string): Promise<boolean>;
     abstract actualizarContrasena(contrasena: string): Promise<boolean>;
+    abstract enviarSolicitud(email: string): Promise<boolean> ;
+    abstract capturarUsuarioPorCorreo(email: string): Promise<Usuario>;
 }

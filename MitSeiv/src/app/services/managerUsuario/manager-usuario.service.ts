@@ -119,14 +119,16 @@ export class ManagerUsuarioService implements BaseDeDatos {
     }
     return userR;
   }
-  public capturarUsuarioPorCorreo(email: string): Usuario {
-    let userR: Usuario;
-    for (const user of this.usuarios) {
-      if (user.email === email) {
-        userR = user;
+  public capturarUsuarioPorCorreo(email: string): Promise<Usuario> {
+    return new Promise(resolve => {
+      let userR: Usuario;
+      for (const user of this.usuarios) {
+        if (user.email === email) {
+          userR = user;
+          return resolve(userR);
+        }
       }
-    }
-    return userR;
+    });
   }
   public delete() {
     // this.userColection.doc(id).delete();
@@ -146,35 +148,37 @@ export class ManagerUsuarioService implements BaseDeDatos {
         });
     });
   }
-  public rechazarSolicitud(email: string) {
+  public rechazarSolicitud(email: string): Promise<boolean> {
     const listaAmigos = this.capturarUsuario(this.capturarIdUsuarioActivo())
       .listaAmigos;
-    this.actualizarSolicitud(email, listaAmigos);
+    return this.actualizarSolicitud(email, listaAmigos);
   }
-  public aceptarSolicitud(email: string) {
+  public aceptarSolicitud(email: string): Promise<boolean> {
     const listaAmigos = this.capturarUsuario(this.capturarIdUsuarioActivo())
       .listaAmigos;
     listaAmigos.push(email);
-    this.actualizarSolicitud(email, listaAmigos);
+    return this.actualizarSolicitud(email, listaAmigos);
   }
-  public enviarSolicitud(email: string) {
-    const usuarioSolicitado = this.capturarUsuarioPorCorreo(email);
-    const solicitudesAmigosActualizadas = usuarioSolicitado.solicitudesAmigos.push(this.usuarioActivo.email);
-    return new Promise(response => {
-      this.usuariosColeccion
-        .doc(usuarioSolicitado.id)
-        .update({
+  public enviarSolicitud(email: string): Promise<boolean> {
+    return this.capturarUsuarioPorCorreo(email)
+      .then(usuarioSolicitado => {
+        if (usuarioSolicitado.solicitudesAmigos === undefined) {
+          usuarioSolicitado.solicitudesAmigos = new Array<string>();
+        };
+        usuarioSolicitado.solicitudesAmigos.push(
+          this.usuarioActivo.email
+        );
+        const solicitudesAmigosActualizadas =  usuarioSolicitado.solicitudesAmigos;
+        this.usuariosColeccion.doc(usuarioSolicitado.id).update({
           solicitudesAmigos: solicitudesAmigosActualizadas
-        })
-        .then(() => {
-          response(true);
-        })
-        .catch(() => {
-          response(false);
         });
-    });
+        return true;
+      })
+      .catch(() => {
+        return false;
+      });
   }
-  public actualizarSolicitud(email, listaAmigos) {
+  public actualizarSolicitud(email, listaAmigos): Promise<boolean> {
     const solicitudesAmigos = this.capturarUsuario(
       this.capturarIdUsuarioActivo()
     ).solicitudesAmigos;
