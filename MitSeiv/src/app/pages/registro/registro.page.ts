@@ -1,4 +1,5 @@
-import { ManagerUserService } from './../services/managerUser/manager-user.service';
+import { BaseDeDatos } from 'src/app/interfaceServicios/baseDeDatos';
+
 import { Component } from '@angular/core';
 import {
   FormGroup,
@@ -6,13 +7,13 @@ import {
   FormBuilder,
   Validators
 } from '@angular/forms';
-
+import { Router } from '@angular/router';
 @Component({
-  selector: 'app-home',
-  templateUrl: 'home.page.html',
-  styleUrls: ['home.page.scss']
+  selector: 'app-registro',
+  templateUrl: './registro.page.html',
+  styleUrls: ['./registro.page.scss']
 })
-export class HomePage {
+export class RegistroPage {
   registerForm: FormGroup;
 
   // tslint:disable-next-line: variable-name
@@ -52,7 +53,11 @@ export class HomePage {
       }
     ]
   };
-  constructor(public formBuilder: FormBuilder, public mu: ManagerUserService) {
+  constructor(
+    public formBuilder: FormBuilder,
+    public base: BaseDeDatos,
+    public router: Router
+  ) {
     this.registerForm = this.formBuilder.group(
       {
         email: new FormControl('', Validators.compose([Validators.required])),
@@ -84,11 +89,17 @@ export class HomePage {
     return password === confirmPassword ? null : { passwordNotMatch: true };
   }
   onSubmit() {
-    this.mu.registrar(this.registerForm.value.email, this.registerForm.value.password).then(() => {
-      console.log('creado');
-    }).catch(() => {
-      console.log('fallo');
-    });
-
+    this.base
+      .registrar(
+        this.registerForm.value.email,
+        this.registerForm.value.password
+      )
+      .then(r => {
+        if (r) {
+          this.router.navigate(['inicio-sesion']);
+        } else {
+          console.log('Fallo al registrar usuario');
+        }
+      });
   }
 }

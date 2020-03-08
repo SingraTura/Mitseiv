@@ -1,28 +1,28 @@
-import { Injectable } from '@angular/core';
+import { Injectable } from "@angular/core";
 import {
   AngularFirestoreCollection,
   AngularFirestore
-} from '@angular/fire/firestore';
-import { map, take } from 'rxjs/operators';
-import { AngularFireAuth } from '@angular/fire/auth';
-import { Observable } from 'rxjs';
-import { Usuario } from 'src/app/core/model/class/usuario';
-import { UsuarioBuilder } from 'src/app/core/model/builder/userBuilder';
-import { BaseDeDatos } from 'src/app/interfaceServicios/baseDeDatos';
-import { resolve } from 'url';
+} from "@angular/fire/firestore";
+import { map, take } from "rxjs/operators";
+import { AngularFireAuth } from "@angular/fire/auth";
+import { Observable } from "rxjs";
+import { Usuario } from "src/app/core/model/class/usuario";
+import { UsuarioBuilder } from "src/app/core/model/builder/userBuilder";
+import { BaseDeDatos } from "src/app/interfaceServicios/baseDeDatos";
 
 interface Usuariable {
   id?: any;
   nombre: string;
   contrasena: string;
   email: string;
-  latitud: string;
-  longitud: string;
+  listaAmigos: Array<string>;
+  solicitudesAmigos: Array<string>;
+  localizacion: Map<string, number>;
 }
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root"
 })
-export class ManagerUserService implements BaseDeDatos {
+export class ManagerUsuarioService implements BaseDeDatos {
   private usuarioActivo: Usuario;
   private usuariosBase: Observable<Usuariable[]>;
   private usuariosColeccion: AngularFirestoreCollection<Usuariable>;
@@ -34,7 +34,7 @@ export class ManagerUserService implements BaseDeDatos {
     private firebaseAuth: AngularFireAuth
   ) {
     this.login = false;
-    this.usuariosColeccion = this.afs.collection<Usuariable>('usuarios');
+    this.usuariosColeccion = this.afs.collection<Usuariable>("usuarios");
     this.usuariosBase = this.usuariosColeccion.snapshotChanges().pipe(
       map(actions => {
         return actions.map(a => {
@@ -47,7 +47,7 @@ export class ManagerUserService implements BaseDeDatos {
     this.usuariosBase.subscribe(
       (res: any) => (this.usuarios = res),
       (err: any) =>
-        console.log('It is a error unexpected from firebase suscribe')
+        console.log("It is a error unexpected from firebase suscribe")
     );
   }
   public registrar(email: string, contrasena: string): Promise<boolean> {
@@ -119,19 +119,78 @@ export class ManagerUserService implements BaseDeDatos {
     }
     return userR;
   }
+  public capturarUsuarioPorCorreo(email: string): Usuario {
+    let userR: Usuario;
+    for (const user of this.usuarios) {
+      if (user.email === email) {
+        userR = user;
+      }
+    }
+    return userR;
+  }
   public delete() {
     // this.userColection.doc(id).delete();
   }
-  public actualizarUsuario(
-    nombre: string,
-    direccion: string
-  ): Promise<boolean> {
+  public actualizarUsuario(nombre: string): Promise<boolean> {
     return new Promise(response => {
       this.usuariosColeccion
         .doc(this.usuarioActivo.id)
         .update({
-          name: nombre,
-          address: direccion
+          name: nombre
+        })
+        .then(() => {
+          response(true);
+        })
+        .catch(() => {
+          response(false);
+        });
+    });
+  }
+  public rechazarSolicitud(email: string) {
+    const listaAmigos = this.capturarUsuario(this.capturarIdUsuarioActivo())
+      .listaAmigos;
+    this.actualizarSolicitud(email, listaAmigos);
+  }
+  public aceptarSolicitud(email: string) {
+    const listaAmigos = this.capturarUsuario(this.capturarIdUsuarioActivo())
+      .listaAmigos;
+    listaAmigos.push(email);
+    this.actualizarSolicitud(email, listaAmigos);
+  }
+  public enviarSolicitud(email: string) {
+    const usuarioSolicitado = this.capturarUsuarioPorCorreo(email);
+    const solicitudesAmigosActualizadas = usuarioSolicitado.solicitudesAmigos.push(this.usuarioActivo.email);
+    return new Promise(response => {
+      this.usuariosColeccion
+        .doc(usuarioSolicitado.id)
+        .update({
+          solicitudesAmigos: solicitudesAmigosActualizadas
+        })
+        .then(() => {
+          response(true);
+        })
+        .catch(() => {
+          response(false);
+        });
+    });
+  }
+  public actualizarSolicitud(email, listaAmigos) {
+    const solicitudesAmigos = this.capturarUsuario(
+      this.capturarIdUsuarioActivo()
+    ).solicitudesAmigos;
+    const solicitudesAmigosActualizadas = new Array<string>();
+
+    solicitudesAmigos.forEach(solicitud => {
+      if (!solicitud.includes(email)) {
+        solicitudesAmigosActualizadas.push(solicitud);
+      }
+    });
+    return new Promise(response => {
+      this.usuariosColeccion
+        .doc(this.usuarioActivo.id)
+        .update({
+          listaAmigos: listaAmigos,
+          solicitudesAmigos: solicitudesAmigosActualizadas
         })
         .then(() => {
           response(true);

@@ -1,65 +1,67 @@
-import { Localizacion } from './localizacion';
+
 export class Usuario {
-  // tslint:disable-next-line:variable-name
-  private _id: string;
-  // tslint:disable-next-line:variable-name
+  // tslint:disable-next-line: variable-name
+  private _id: any;
+  // tslint:disable-next-line: variable-name
   private _nombre: string;
-  // tslint:disable-next-line:variable-name
-  private _contrasena: string;
-  // tslint:disable-next-line:variable-name
+  // tslint:disable-next-line: variable-name
   private _email: string;
-  // tslint:disable-next-line:variable-name
-  private _location: Localizacion;
+  // tslint:disable-next-line: variable-name
+  private _listaAmigos: Array<string>;
+  // tslint:disable-next-line: variable-name
+  private _solicitudesAmigos: Array<string>;
+  // tslint:disable-next-line: variable-name
+  private _localizacion: Map<string, number>;
 
   constructor(
-    id: string,
+    id: any,
     nombre: string,
-    contrasena: string,
     email: string,
-    location: Localizacion
+    listaAmigos: Array<string>,
+    solicitudesAmigos: Array<string>,
+    localizacion: Map<string, number>
   ) {
     this._id = id;
     this._nombre = nombre;
-    this._contrasena = contrasena;
     this._email = email;
-    this._location = location;
+    this._listaAmigos = listaAmigos;
+    this._solicitudesAmigos = solicitudesAmigos;
+    this._localizacion = localizacion;
   }
-
-  public get id(): string {
+  public get id(): any {
     return this._id;
+  }
+  public set id(value: any) {
+    this._id = value;
   }
   public get nombre(): string {
     return this._nombre;
   }
-  public get contrasena(): string {
-    return this._contrasena;
-  }
-
-  public get email(): string {
-    return this._email;
-  }
-
-  public get location(): Localizacion {
-    return this._location;
-  }
-  // tslint:disable-next-line:adjacent-overload-signatures
-  public set id(value: string) {
-    this._id = value;
-  }
-  // tslint:disable-next-line:adjacent-overload-signatures
   public set nombre(value: string) {
     this._nombre = value;
   }
-  // tslint:disable-next-line:adjacent-overload-signatures
-  public set contrasena(value: string) {
-    this.contrasena = value;
+  public get email(): string {
+    return this._email;
   }
-  // tslint:disable-next-line:adjacent-overload-signatures
   public set email(value: string) {
     this._email = value;
   }
-  // tslint:disable-next-line:adjacent-overload-signatures
-  public set location(value: Localizacion) {
-    this._location = value;
+  public get listaAmigos(): Array<string> {
+    return this._listaAmigos;
+  }
+  public set listaAmigos(value: Array<string>) {
+    this._listaAmigos = value;
+  }
+  public get solicitudesAmigos(): Array<string> {
+    return this._solicitudesAmigos;
+  }
+  public set solicitudesAmigos(value: Array<string>) {
+    this._solicitudesAmigos = value;
+  }
+  public get localizacion(): Map<string, number> {
+    return this._localizacion;
+  }
+  public set localizacion(value: Map<string, number>) {
+    this._localizacion = value;
   }
 }

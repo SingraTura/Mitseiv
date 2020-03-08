@@ -1,33 +1,36 @@
-import { Localizacion } from './../class/localizacion';
 import { Usuario } from '../class/usuario';
 
 export class UsuarioBuilder {
-  // tslint:disable-next-line:variable-name
-  private _uid: string;
-  // tslint:disable-next-line:variable-name
+  // tslint:disable-next-line: variable-name
+  private _id: any;
+  // tslint:disable-next-line: variable-name
   private _nombre: string;
-  // tslint:disable-next-line:variable-name
-  private _contrasena: string;
-  // tslint:disable-next-line:variable-name
+  // tslint:disable-next-line: variable-name
   private _email: string;
-  // tslint:disable-next-line:variable-name
-  private _localizacion: Localizacion;
+  // tslint:disable-next-line: variable-name
+  private _listaAmigos: Array<string>;
+  // tslint:disable-next-line: variable-name
+  private _solicitudesAmigos: Array<string>;
+  // tslint:disable-next-line: variable-name
+  private _localizacion: Map<string, number>;
+
   constructor() {
     // uid: string, name: string, password: string, email: string, tittle: string, adress: string
   }
   public restart(): UsuarioBuilder {
     this._nombre = '';
-    this._contrasena = '';
     this._email = '';
-    this._localizacion = new Localizacion(0, 0);
+    this._listaAmigos = new Array<string>();
+    this._localizacion = new Map<string, number>();
     return this;
   }
   public build(): Usuario {
     return new Usuario(
       this.generateUID(),
       this._nombre,
-      this._contrasena,
       this._email,
+      this._listaAmigos,
+      this._solicitudesAmigos,
       this._localizacion
     );
   }
@@ -35,8 +38,9 @@ export class UsuarioBuilder {
     return new Usuario(
       id,
       this._nombre,
-      this._contrasena,
       this._email,
+      this._listaAmigos,
+      this._solicitudesAmigos,
       this._localizacion
     );
   }
@@ -44,18 +48,23 @@ export class UsuarioBuilder {
     this._nombre = name;
     return this;
   }
-  password(password: string): UsuarioBuilder {
-    this._contrasena = password;
-    return this;
-  }
   email(email: string): UsuarioBuilder {
     this._email = email;
     return this;
   }
-  address(localizacion: Localizacion): UsuarioBuilder {
+  listaAmigos(listaAmigos: Array<string>): UsuarioBuilder {
+    this._listaAmigos = listaAmigos;
+    return this;
+  }
+  solicitudesAmigos(solicitudesAmigos: Array<string>): UsuarioBuilder {
+    this._solicitudesAmigos = solicitudesAmigos;
+    return this;
+  }
+  localizacion(localizacion: Map<string, number>): UsuarioBuilder {
     this._localizacion = localizacion;
     return this;
   }
+  /* Esto es únicamente para los mock los id los genera la base de datos */
   private generateUID(): string {
     let d = new Date().getTime();
     // tslint:disable-next-line:only-arrow-functions

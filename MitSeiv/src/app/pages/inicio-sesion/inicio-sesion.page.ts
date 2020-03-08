@@ -24,6 +24,6 @@ export class InicioSesionPage implements OnInit {
     });
   }
   registrar() {
-    this.router.navigate(['home']);
+    this.router.navigate(['registro']);
   }
 }

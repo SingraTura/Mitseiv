@@ -1,4 +1,4 @@
-import { ManagerUserService } from './services/managerUser/manager-user.service';
+import { ManagerUsuarioService } from './services/managerUsuario/manager-usuario.service';
 import { BaseDeDatos } from 'src/app/interfaceServicios/baseDeDatos';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
@@ -39,7 +39,7 @@ import { AngularFireAuthModule } from '@angular/fire/auth';
     AngularFirestore,
     AngularFireAuthModule,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    { provide: BaseDeDatos, useClass: ManagerUserService}
+    { provide: BaseDeDatos, useClass: ManagerUsuarioService}
   ],
   bootstrap: [AppComponent]
 })
