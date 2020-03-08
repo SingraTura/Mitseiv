@@ -1,5 +1,6 @@
 import { BaseDeDatos } from 'src/app/interfaceServicios/baseDeDatos';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { IonList, ToastController } from '@ionic/angular';
 
 @Component({
   selector: 'app-solicitudes',
@@ -8,7 +9,8 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SolicitudesPage implements OnInit {
   private email: string;
-  constructor(public base: BaseDeDatos) {
+  @ViewChild('lista', { static: false }) lista: IonList;
+  constructor(public base: BaseDeDatos, private toastCtrl: ToastController) {
     console.log(this.base.capturarUsuario(this.base.capturarIdUsuarioActivo()));
     console.log(this.base.capturarUsuarioPorCorreo('adrian@gmail.com'));
   }
@@ -20,13 +22,37 @@ export class SolicitudesPage implements OnInit {
       .solicitudesAmigos;
   }
   enviar() {
-    console.log(this.base.capturarUsuarioPorCorreo(this.email));
-    this.base.enviarSolicitud(this.email).then(r => {
-      if (r) {
-        console.log('enviado');
-      } else {
-        console.log('usuario no existe');
-      }
+    this.base
+      .capturarUsuarioPorCorreo(this.email)
+      .then(() => {
+        this.base
+          .comprobarListaAmigos(this.email)
+          .then(() => {
+            this.base.enviarSolicitud(this.email);
+            const mensaje = 'Petición enviada a ' + this.email + ' :D';
+            this.presentToast(mensaje);
+          })
+          .catch(mensaje => {
+            this.presentToast(mensaje);
+          });
+      })
+      .catch(() => {
+        const mensaje =
+          'El usuario ' + this.email + ' no ha sido encontrado D:';
+        this.presentToast(mensaje);
+      });
+  }
+  async presentToast(message) {
+    const toast = await this.toastCtrl.create({
+      message,
+      duration: 2000
     });
+    toast.present();
+  }
+  aceptar(email: string) {
+    this.base.aceptarSolicitud(email);
+  }
+  rechazar(email: string) {
+    this.base.rechazarSolicitud(email);
   }
 }

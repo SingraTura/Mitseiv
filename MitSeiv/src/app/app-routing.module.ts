@@ -15,6 +15,10 @@ const routes: Routes = [
     path: 'solicitudes',
     loadChildren: () => import('./pages/solicitudes/solicitudes.module').then( m => m.SolicitudesPageModule)
   },
+  {
+    path: 'lista-amigos',
+    loadChildren: () => import('./pages/lista-amigos/lista-amigos.module').then( m => m.ListaAmigosPageModule)
+  },
 ];
 
 @NgModule({
