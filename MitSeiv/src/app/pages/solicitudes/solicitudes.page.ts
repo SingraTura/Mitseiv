@@ -1,5 +1,5 @@
 import { BaseDeDatos } from 'src/app/interfaceServicios/baseDeDatos';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { IonList, ToastController } from '@ionic/angular';
 
 @Component({
@@ -7,15 +7,10 @@ import { IonList, ToastController } from '@ionic/angular';
   templateUrl: './solicitudes.page.html',
   styleUrls: ['./solicitudes.page.scss']
 })
-export class SolicitudesPage implements OnInit {
+export class SolicitudesPage {
   private email: string;
   @ViewChild('lista', { static: false }) lista: IonList;
-  constructor(public base: BaseDeDatos, private toastCtrl: ToastController) {
-    console.log(this.base.capturarUsuario(this.base.capturarIdUsuarioActivo()));
-    console.log(this.base.capturarUsuarioPorCorreo('adrian@gmail.com'));
-  }
-
-  ngOnInit() {}
+  constructor(public base: BaseDeDatos, private toastCtrl: ToastController) {}
 
   listaAmigos() {
     return this.base.capturarUsuario(this.base.capturarIdUsuarioActivo())

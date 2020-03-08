@@ -14,4 +14,5 @@ export abstract class BaseDeDatos {
     abstract comprobarListaAmigos(email: string): Promise<string> ;
     abstract aceptarSolicitud(email: string): Promise<boolean>;
     abstract rechazarSolicitud(email: string): Promise<boolean>;
+    abstract  eliminarAmigo(email: string);
 }

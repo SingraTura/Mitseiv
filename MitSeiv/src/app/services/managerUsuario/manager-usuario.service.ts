@@ -161,20 +161,30 @@ export class ManagerUsuarioService implements BaseDeDatos {
       return this.actualizarSolicitud(usuario);
     });
   }
+  public eliminarAmigo(email: string) {
+    console.log(email);
+    this.capturarUsuarioPorCorreo(email).then((usuario) => {
+      let list;
+      list = this.eliminarCorreoDeLista(this.usuarioActivo.listaAmigos, usuario.email);
+      this.actualizarAmigos(this.usuarioActivo.id, list, this.usuarioActivo.solicitudesAmigos);
+      list = this.eliminarCorreoDeLista(usuario.listaAmigos, this.usuarioActivo.email);
+      this.actualizarAmigos(usuario.id, list, usuario.solicitudesAmigos);
+    });
+  }
   // REFACTORIZADO DUDOSO
   public actualizarSolicitud(usuario): Promise<boolean> {
     return new Promise((resolve) => {
       let list;
-      list = this.eliminarSolicitud(this.usuarioActivo.solicitudesAmigos, usuario.email);
+      list = this.eliminarCorreoDeLista(this.usuarioActivo.solicitudesAmigos, usuario.email);
       this.actualizarAmigos(this.usuarioActivo.id, this.usuarioActivo.listaAmigos, list);
-      list = this.eliminarSolicitud(usuario.solicitudesAmigos, this.usuarioActivo.email);
+      list = this.eliminarCorreoDeLista(usuario.solicitudesAmigos, this.usuarioActivo.email);
       this.actualizarAmigos(usuario.id, usuario.listaAmigos, list);
       resolve(true);
     });
   }
   // REFACTORIZADO
   private actualizarAmigos(id, listaAmigosA, listaSolicitudes) {
-    if(listaAmigosA === undefined) {
+    if (listaAmigosA === undefined) {
       listaAmigosA = new Array<string>();
     }
     this.usuariosColeccion.doc(id).update({
@@ -183,14 +193,14 @@ export class ManagerUsuarioService implements BaseDeDatos {
     });
   }
   // REFACTORIZADO
-  private eliminarSolicitud(solicitudesAmigos: string[], email: string) {
-    const solicitudesAmigosActualizadas = new Array<string>();
-    solicitudesAmigos.forEach(solicitud => {
+  private eliminarCorreoDeLista(amigos: string[], email: string) {
+    const amigosActualizados = new Array<string>();
+    amigos.forEach(solicitud => {
       if (!solicitud.includes(email)) {
-        solicitudesAmigosActualizadas.push(solicitud);
+        amigosActualizados.push(solicitud);
       }
     });
-    return solicitudesAmigosActualizadas;
+    return amigosActualizados;
   }
   // REFACTORIZADO DUDOSO
   public enviarSolicitud(email: string): Promise<boolean> {
