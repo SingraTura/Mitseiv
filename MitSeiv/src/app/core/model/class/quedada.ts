@@ -1,25 +1,27 @@
-import { Usuario } from 'src/app/core/model/class/usuario';
-export class QuedadaPrivada {
+export class Quedada {
   // tslint:disable-next-line: variable-name
   private _id: string;
   // tslint:disable-next-line: variable-name
-  private _creador: Usuario;
+  private _creador: string;
   // tslint:disable-next-line: variable-name
-  private _miembros: Array<Usuario>;
+  private _miembros: Array<string>;
   // tslint:disable-next-line: variable-name
   private _chat: Array<string>;
   // tslint:disable-next-line: variable-name
   private _localizacion: Map<string, number>;
   // tslint:disable-next-line: variable-name
   private _fecha: Date;
+  // tslint:disable-next-line: variable-name
+  private _visibilidad: boolean;
 
-  constructor(id, creador, miembros, chat, localizacion, fecha) {
+  constructor(id, creador, miembros, chat, localizacion, fecha, visibilidad) {
     this._id = id;
     this._creador = creador;
     this._miembros = miembros;
     this._chat = chat;
     this._localizacion = localizacion;
     this._fecha = fecha;
+    this._visibilidad = visibilidad;
   }
   public get id(): any {
     return this._id;
@@ -27,16 +29,16 @@ export class QuedadaPrivada {
   public set id(value: any) {
     this._id = value;
   }
-  public get creador(): Usuario {
+  public get creador(): string {
     return this._creador;
   }
-  public set creador(value: Usuario) {
+  public set creador(value: string) {
     this._creador = value;
   }
-  public get miembros(): Array<Usuario> {
+  public get miembros(): Array<string> {
     return this._miembros;
   }
-  public set miembros(value: Array<Usuario>) {
+  public set miembros(value: Array<string>) {
     this._miembros = value;
   }
   public get chat(): Array<string> {
@@ -56,5 +58,11 @@ export class QuedadaPrivada {
   }
   public set fecha(value: Date) {
     this._fecha = value;
+  }
+  public get visibilidad(): boolean {
+    return this._visibilidad;
+  }
+  public set visibilidad(value: boolean) {
+    this._visibilidad = value;
   }
 }

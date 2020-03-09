@@ -9,10 +9,10 @@ export abstract class BaseDeDatos {
     abstract capturarUsuario(uid: string): Usuario;
     abstract actualizarUsuario(nombre: string, direccion: string): Promise<boolean>;
     abstract actualizarContrasena(contrasena: string): Promise<boolean|string>;
-    abstract enviarSolicitud(email: string): Promise<boolean> ;
+    abstract enviarSolicitudAmistad(email: string): Promise<boolean> ;
     abstract capturarUsuarioPorCorreo(email: string): Promise<Usuario>;
     abstract comprobarListaAmigos(email: string): Promise<string> ;
-    abstract aceptarSolicitud(email: string): Promise<boolean>;
-    abstract rechazarSolicitud(email: string): Promise<boolean>;
-    abstract  eliminarAmigo(email: string);
+    abstract aceptarSolicitudAmistad(email: string): Promise<boolean>;
+    abstract rechazarSolicitudAmistad(email: string): Promise<boolean>;
+    abstract eliminarAmigo(email: string);
 }

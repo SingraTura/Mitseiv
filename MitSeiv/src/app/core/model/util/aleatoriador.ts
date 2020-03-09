@@ -1,4 +1,4 @@
-export class Aleatoriador{
+export class Aleatoriador {
     static generar(): string {
         let d = new Date().getTime();
         // tslint:disable-next-line:only-arrow-functions

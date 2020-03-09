@@ -1,4 +1,3 @@
-
 export class Usuario {
   // tslint:disable-next-line: variable-name
   private _id: any;
@@ -12,6 +11,10 @@ export class Usuario {
   private _solicitudesAmigos: Array<string>;
   // tslint:disable-next-line: variable-name
   private _localizacion: Map<string, number>;
+  // tslint:disable-next-line: variable-name
+  private _solicitudesQuedadas: Array<string>;
+  // tslint:disable-next-line: variable-name
+  private _quedadas: Array<string>;
 
   constructor(
     id: any,
@@ -19,7 +22,9 @@ export class Usuario {
     email: string,
     listaAmigos: Array<string>,
     solicitudesAmigos: Array<string>,
-    localizacion: Map<string, number>
+    localizacion: Map<string, number>,
+    solicitudesQuedadas: Array<string>,
+    quedadas: Array<string>
   ) {
     this._id = id;
     this._nombre = nombre;
@@ -27,6 +32,8 @@ export class Usuario {
     this._listaAmigos = listaAmigos;
     this._solicitudesAmigos = solicitudesAmigos;
     this._localizacion = localizacion;
+    this._solicitudesQuedadas = solicitudesQuedadas;
+    this._quedadas = quedadas;
   }
   public get id(): any {
     return this._id;
@@ -63,5 +70,17 @@ export class Usuario {
   }
   public set localizacion(value: Map<string, number>) {
     this._localizacion = value;
+  }
+  public get solicitudesQuedadas(): Array<string> {
+    return this._solicitudesQuedadas;
+  }
+  public set solicitudesQuedadas(value: Array<string>) {
+    this._solicitudesQuedadas = value;
+  }
+  public get quedadas(): Array<string> {
+    return this._quedadas;
+  }
+  public set quedadas(value: Array<string>) {
+    this._quedadas = value;
   }
 }

@@ -14,6 +14,10 @@ export class UsuarioBuilder {
   private _solicitudesAmigos: Array<string>;
   // tslint:disable-next-line: variable-name
   private _localizacion: Map<string, number>;
+  // tslint:disable-next-line: variable-name
+  private _solicitudesQuedadas: Array<string>;
+  // tslint:disable-next-line: variable-name
+  private _quedadas: Array<string>;
 
   constructor() {
     // uid: string, name: string, password: string, email: string, tittle: string, adress: string
@@ -23,6 +27,11 @@ export class UsuarioBuilder {
     this._email = '';
     this._listaAmigos = new Array<string>();
     this._localizacion = new Map<string, number>();
+    this._localizacion.set('latitud', 0);
+    this._localizacion.set('longitud', 0);
+    this._solicitudesAmigos = new Array<string>();
+    this._solicitudesQuedadas = new Array<string>();
+    this._quedadas = new Array<string>();
     return this;
   }
   public build(): Usuario {
@@ -32,7 +41,9 @@ export class UsuarioBuilder {
       this._email,
       this._listaAmigos,
       this._solicitudesAmigos,
-      this._localizacion
+      this._localizacion,
+      this._solicitudesQuedadas,
+      this._quedadas
     );
   }
   public buildWithId(id: string): Usuario {
@@ -42,7 +53,9 @@ export class UsuarioBuilder {
       this._email,
       this._listaAmigos,
       this._solicitudesAmigos,
-      this._localizacion
+      this._localizacion,
+      this._solicitudesQuedadas,
+      this._quedadas
     );
   }
   name(name: string): UsuarioBuilder {
@@ -59,6 +72,14 @@ export class UsuarioBuilder {
   }
   solicitudesAmigos(solicitudesAmigos: Array<string>): UsuarioBuilder {
     this._solicitudesAmigos = solicitudesAmigos;
+    return this;
+  }
+  solicitudesQuedadas(solicitudesQuedadas: Array<string>): UsuarioBuilder {
+    this._solicitudesQuedadas = solicitudesQuedadas;
+    return this;
+  }
+  quedadas(quedadas: Array<string>): UsuarioBuilder {
+    this._quedadas = quedadas;
     return this;
   }
   localizacion(localizacion: Map<string, number>): UsuarioBuilder {

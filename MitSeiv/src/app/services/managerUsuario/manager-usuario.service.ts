@@ -1,3 +1,4 @@
+import { GestorLista } from './../../core/model/util/gestorDeListas';
 import { Injectable } from '@angular/core';
 import {
   AngularFirestoreCollection,
@@ -12,11 +13,13 @@ import { BaseDeDatos } from 'src/app/interfaceServicios/baseDeDatos';
 
 interface Usuariable {
   id?: any;
-  nombre: string;
   contrasena: string;
+  nombre: string;
   email: string;
   listaAmigos: Array<string>;
   solicitudesAmigos: Array<string>;
+  solicitudesQuedadas: Array<string>;
+  quedadas: Array<string>;
   localizacion: Map<string, number>;
 }
 @Injectable({
@@ -28,7 +31,7 @@ export class ManagerUsuarioService implements BaseDeDatos {
   private usuariosColeccion: AngularFirestoreCollection<Usuariable>;
   private usuarios: Usuario[];
   private login: boolean;
-
+  private gestorLista = new GestorLista();
   constructor(
     private afs: AngularFirestore,
     private firebaseAuth: AngularFireAuth
@@ -63,7 +66,11 @@ export class ManagerUsuarioService implements BaseDeDatos {
           this.usuariosColeccion
             .doc(usuario.id)
             .set({
-              email: usuario.email
+              email: usuario.email,
+              listaAmigos: usuario.listaAmigos,
+              solicitudesAmigos: usuario.solicitudesAmigos,
+              solicitudesQuedadas: usuario.solicitudesQuedadas,
+              quedadas: usuario.quedadas
             })
             .then(() => {
               this.usuarioActivo = usuario;
@@ -107,6 +114,167 @@ export class ManagerUsuarioService implements BaseDeDatos {
   public isLogin(): boolean {
     return this.login;
   }
+  public delete() {
+    // this.userColection.doc(id).delete();
+  }
+  public actualizarUsuario(nombre: string): Promise<boolean> {
+    return new Promise(response => {
+      this.usuariosColeccion
+        .doc(this.usuarioActivo.id)
+        .update({
+          name: nombre
+        })
+        .then(() => {
+          response(true);
+        })
+        .catch(() => {
+          response(false);
+        });
+    });
+  }
+  public actualizarContrasena(contrasena: string): Promise<boolean | string> {
+    return new Promise((response, reject) => {
+      this.firebaseAuth.auth.currentUser
+        .updatePassword(contrasena)
+        .then(() => {
+          response(true);
+        })
+        .catch(() => {
+          reject('Error al actualizar contraseña');
+        });
+    });
+  }
+
+  // Gestor Quedadas
+  private actualizarQuedadas(id, listaQuedadas, listaSolicitudes) {
+    this.usuariosColeccion.doc(id).update({
+      quedadas: listaQuedadas,
+      solicitudesQuedadas: listaSolicitudes
+    });
+  }
+  // Gestor Amigos
+  public aceptarSolicitudAmistad(email: string): Promise<boolean> {
+    return this.capturarUsuarioPorCorreo(email).then(usuario => {
+      this.usuarioActivo.listaAmigos.push(email);
+      usuario.listaAmigos.push(this.usuarioActivo.email);
+      return this.actualizarSolicitudAmistad(usuario);
+    });
+  }
+  public eliminarAmigo(email: string) {
+    this.capturarUsuarioPorCorreo(email).then(usuario => {
+      const activo = this.usuarioActivo;
+      const usuarios = [activo, usuario];
+      const emails = [usuario.email, activo.email];
+
+      for (let i = 0; i < usuarios.length; i++) {
+        const listaAmigosActualizada = this.gestorLista.eliminarDeLista(
+          usuarios[i].listaAmigos,
+          emails[i]
+        );
+        this.actualizarAmigos(
+          usuarios[i].id,
+          listaAmigosActualizada,
+          usuarios[i].solicitudesAmigos
+        );
+      }
+    });
+  }
+  public actualizarSolicitudAmistad(usuario): Promise<boolean> {
+    return new Promise(resolve => {
+      const activo = this.usuarioActivo;
+      const usuarios = [activo, usuario];
+      const emails = [usuario.email, activo.email];
+
+      for (let i = 0; i < usuarios.length; i++) {
+        const listaSolicitudesActualizada = this.gestorLista.eliminarDeLista(
+          usuarios[i].solicitudesAmigos,
+          emails[i]
+        );
+        this.actualizarAmigos(
+          usuarios[i].id,
+          usuarios[i].listaAmigos,
+          listaSolicitudesActualizada
+        );
+      }
+      resolve(true);
+    });
+  }
+  private actualizarAmigos(id, listaAmigosA, listaSolicitudes) {
+    this.usuariosColeccion.doc(id).update({
+      listaAmigos: listaAmigosA,
+      solicitudesAmigos: listaSolicitudes
+    });
+  }
+  public enviarSolicitudAmistad(email: string): Promise<boolean> {
+    return this.capturarUsuarioPorCorreo(email)
+      .then(usuarioSolicitado => {
+        if (usuarioSolicitado.solicitudesAmigos === undefined) {
+          usuarioSolicitado.solicitudesAmigos = new Array<string>();
+        }
+        usuarioSolicitado.solicitudesAmigos.push(this.usuarioActivo.email);
+        const solicitudesAmigosActualizadas =
+          usuarioSolicitado.solicitudesAmigos;
+        this.usuariosColeccion.doc(usuarioSolicitado.id).update({
+          solicitudesAmigos: solicitudesAmigosActualizadas
+        });
+        return true;
+      })
+      .catch(() => {
+        return false;
+      });
+  }
+  public comprobarListaAmigos(email: string): Promise<string> {
+    return new Promise((response, reject) => {
+      this.capturarUsuarioPorCorreo(email).then(user => {
+        let found = false;
+        let mensaje: string;
+        const solicitudesAmigos = user.solicitudesAmigos;
+        const solicitudesAmigosActivo = this.usuarioActivo.listaAmigos;
+        const emailPersonal = this.usuarioActivo.email;
+
+        mensaje = email + ' ya es tu amigo.';
+        found = this.filtrarAmigos(
+          mensaje,
+          solicitudesAmigosActivo,
+          email,
+          reject
+        );
+        mensaje = 'Ya le has enviado una peticion a ' + email;
+        found = this.filtrarAmigos(
+          mensaje,
+          solicitudesAmigos,
+          emailPersonal,
+          reject
+        );
+        if (!found) {
+          response('ok');
+        }
+      });
+    });
+  }
+  private filtrarAmigos(
+    mensaje: string,
+    lista: any,
+    email: string,
+    reject: (reason?: any) => void
+  ) {
+    let found: boolean;
+    lista.forEach(amigo => {
+      if (amigo.includes(email)) {
+        found = true;
+        reject(mensaje);
+      }
+    });
+
+    return found;
+  }
+  public rechazarSolicitudAmistad(email: string): Promise<boolean> {
+    return this.capturarUsuarioPorCorreo(email).then(usuario => {
+      return this.actualizarSolicitudAmistad(usuario);
+    });
+  }
+  // BloqueCapturaUsuarios
+
   public capturarIdUsuarioActivo(): string {
     return this.firebaseAuth.auth.currentUser.uid;
   }
@@ -130,146 +298,5 @@ export class ManagerUsuarioService implements BaseDeDatos {
       }
       reject();
     });
-  }
-  public delete() {
-    // this.userColection.doc(id).delete();
-  }
-  public actualizarUsuario(nombre: string): Promise<boolean> {
-    return new Promise(response => {
-      this.usuariosColeccion
-        .doc(this.usuarioActivo.id)
-        .update({
-          name: nombre
-        })
-        .then(() => {
-          response(true);
-        })
-        .catch(() => {
-          response(false);
-        });
-    });
-  }
-  public rechazarSolicitud(email: string): Promise<boolean> {
-    return this.capturarUsuarioPorCorreo(email).then((usuario) => {
-      return this.actualizarSolicitud(usuario);
-    });
-  }
-  public aceptarSolicitud(email: string): Promise<boolean> {
-    return this.capturarUsuarioPorCorreo(email).then((usuario) => {
-      this.usuarioActivo.listaAmigos.push(email);
-      usuario.listaAmigos.push(this.usuarioActivo.email);
-      return this.actualizarSolicitud(usuario);
-    });
-  }
-  public eliminarAmigo(email: string) {
-    console.log(email);
-    this.capturarUsuarioPorCorreo(email).then((usuario) => {
-      let list;
-      list = this.eliminarCorreoDeLista(this.usuarioActivo.listaAmigos, usuario.email);
-      this.actualizarAmigos(this.usuarioActivo.id, list, this.usuarioActivo.solicitudesAmigos);
-      list = this.eliminarCorreoDeLista(usuario.listaAmigos, this.usuarioActivo.email);
-      this.actualizarAmigos(usuario.id, list, usuario.solicitudesAmigos);
-    });
-  }
-  // REFACTORIZADO DUDOSO
-  public actualizarSolicitud(usuario): Promise<boolean> {
-    return new Promise((resolve) => {
-      let list;
-      list = this.eliminarCorreoDeLista(this.usuarioActivo.solicitudesAmigos, usuario.email);
-      this.actualizarAmigos(this.usuarioActivo.id, this.usuarioActivo.listaAmigos, list);
-      list = this.eliminarCorreoDeLista(usuario.solicitudesAmigos, this.usuarioActivo.email);
-      this.actualizarAmigos(usuario.id, usuario.listaAmigos, list);
-      resolve(true);
-    });
-  }
-  // REFACTORIZADO
-  private actualizarAmigos(id, listaAmigosA, listaSolicitudes) {
-    if (listaAmigosA === undefined) {
-      listaAmigosA = new Array<string>();
-    }
-    this.usuariosColeccion.doc(id).update({
-      listaAmigos: listaAmigosA,
-      solicitudesAmigos: listaSolicitudes
-    });
-  }
-  // REFACTORIZADO
-  private eliminarCorreoDeLista(amigos: string[], email: string) {
-    const amigosActualizados = new Array<string>();
-    amigos.forEach(solicitud => {
-      if (!solicitud.includes(email)) {
-        amigosActualizados.push(solicitud);
-      }
-    });
-    return amigosActualizados;
-  }
-  // REFACTORIZADO DUDOSO
-  public enviarSolicitud(email: string): Promise<boolean> {
-    return this.capturarUsuarioPorCorreo(email)
-      .then(usuarioSolicitado => {
-        if (usuarioSolicitado.solicitudesAmigos === undefined) {
-          usuarioSolicitado.solicitudesAmigos = new Array<string>();
-        }
-        usuarioSolicitado.solicitudesAmigos.push(this.usuarioActivo.email);
-        const solicitudesAmigosActualizadas =
-          usuarioSolicitado.solicitudesAmigos;
-        this.usuariosColeccion.doc(usuarioSolicitado.id).update({
-          solicitudesAmigos: solicitudesAmigosActualizadas
-        });
-        return true;
-      })
-      .catch(() => {
-        return false;
-      });
-  }
-  // REFACTORIZADO
-  public actualizarContrasena(contrasena: string): Promise<boolean|string> {
-    return new Promise((response, reject) => {
-      this.firebaseAuth.auth.currentUser
-        .updatePassword(contrasena)
-        .then(() => {
-          response(true);
-        })
-        .catch(() => {
-          reject('Error al actualizar contraseña');
-        });
-    });
-  }
-  // REFACTORIZADO
-  public comprobarListaAmigos(email: string): Promise<string> {
-    return new Promise((response, reject) => {
-      this.capturarUsuarioPorCorreo(email).then(user => {
-        let found = false;
-        let mensaje: string;
-        const solicitudesAmigos = user.solicitudesAmigos;
-        const solicitudesAmigosActivo =  this.usuarioActivo.listaAmigos;
-        const emailPersonal = this.usuarioActivo.email;
-
-        mensaje = email + ' ya es tu amigo.';
-        found = this.filtrarAmigos( mensaje, solicitudesAmigosActivo, email, reject);
-        mensaje = 'Ya le has enviado una peticion a ' + email;
-        found = this.filtrarAmigos( mensaje, solicitudesAmigos, emailPersonal, reject);
-        if (!found) {
-          response('ok');
-        }
-      });
-    });
-  }
- // REFACTORIZADO
-  private filtrarAmigos(
-    mensaje: string,
-    lista: any,
-    email: string,
-    reject: (reason?: any) => void
-  ) {
-    let found: boolean;
-    if (lista !== undefined) {
-      lista.forEach(amigo => {
-        if (amigo.includes(email)) {
-          found = true;
-          reject(mensaje);
-        }
-      });
-    }
-    return found;
   }
 }

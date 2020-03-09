@@ -23,7 +23,7 @@ export class SolicitudesPage {
         this.base
           .comprobarListaAmigos(this.email)
           .then(() => {
-            this.base.enviarSolicitud(this.email);
+            this.base.enviarSolicitudAmistad(this.email);
             const mensaje = 'Petición enviada a ' + this.email + ' :D';
             this.presentToast(mensaje);
           })
@@ -45,9 +45,9 @@ export class SolicitudesPage {
     toast.present();
   }
   aceptar(email: string) {
-    this.base.aceptarSolicitud(email);
+    this.base.aceptarSolicitudAmistad(email);
   }
   rechazar(email: string) {
-    this.base.rechazarSolicitud(email);
+    this.base.rechazarSolicitudAmistad(email);
   }
 }
