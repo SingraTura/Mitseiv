@@ -1,3 +1,4 @@
+import { Aleatoriador } from './../util/aleatoriador';
 import { Usuario } from '../class/usuario';
 
 export class UsuarioBuilder {
@@ -26,7 +27,7 @@ export class UsuarioBuilder {
   }
   public build(): Usuario {
     return new Usuario(
-      this.generateUID(),
+      Aleatoriador.generar(),
       this._nombre,
       this._email,
       this._listaAmigos,
@@ -63,20 +64,5 @@ export class UsuarioBuilder {
   localizacion(localizacion: Map<string, number>): UsuarioBuilder {
     this._localizacion = localizacion;
     return this;
-  }
-  /* Esto es únicamente para los mock los id los genera la base de datos */
-  private generateUID(): string {
-    let d = new Date().getTime();
-    // tslint:disable-next-line:only-arrow-functions
-    const uid = 'xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx'.replace(/[xy]/g, function(
-      c
-    ) {
-      // tslint:disable-next-line:no-bitwise
-      const r = (d + Math.random() * 16) % 16 | 0;
-      d = Math.floor(d / 16);
-      // tslint:disable-next-line:no-bitwise & triple-equal
-      return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16);
-    });
-    return uid;
   }
 }
