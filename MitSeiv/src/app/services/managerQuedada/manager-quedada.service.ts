@@ -1,3 +1,4 @@
+import { MiConsola } from './../../core/model/util/miConsola';
 import { QuedadaBuilder } from './../../core/model/builder/quedadaBuilder';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { Quedada } from './../../core/model/class/quedada';
@@ -12,10 +13,12 @@ import { Injectable } from '@angular/core';
 interface Quedadable {
   id: string;
   creador: string;
+  descripcion: string;
   miembros: Array<string>;
   chat: Array<string>;
   localizacion: Map<string, number>;
-  fecha: Date;
+  fechaCreacion: Date;
+  fechaEjecucion: Date;
   visibilidad: boolean;
 }
 @Injectable({
@@ -45,21 +48,26 @@ export class ManagerQuedadaService {
     );
   }
 
-  public crearQuedada(usuarioActual: string, visibilidad: boolean) {
+  public crearQuedada(usuarioActual: string, visibilidad: boolean, descripcion: string, fechaEjecucion: Date) {
     const constructor = new QuedadaBuilder();
     const quedada = constructor
       .restart()
       .creador(usuarioActual)
+      .descripcion(descripcion)
+      .fechaEjecucion(fechaEjecucion)
       .visibilidad(visibilidad)
       .build();
     this.quedadasColeccion.doc(quedada.id).set({
       creador: quedada.creador,
       miembros: quedada.miembros,
       chat: quedada.chat,
+      descripcion: quedada.descripcion,
       // localizacion: quedada.localizacion,
-      fecha: quedada.fecha,
+      fechaCreacion: quedada.fechaCreacion,
+      fechaEjecucion: quedada.fechaEjecucion,
       visibilidad: quedada.visibilidad
     });
+    return quedada.id;
   }
   public aceptarQuedada(idQuedada: string, emailAceptado: string) {
     const miembrosActualizados = this.obtenerListaMiembros(idQuedada);

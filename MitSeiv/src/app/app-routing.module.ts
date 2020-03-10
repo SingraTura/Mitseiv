@@ -19,6 +19,10 @@ const routes: Routes = [
     path: 'lista-amigos',
     loadChildren: () => import('./pages/lista-amigos/lista-amigos.module').then( m => m.ListaAmigosPageModule)
   },
+  {
+    path: 'crear-quedada',
+    loadChildren: () => import('./pages/crear-quedada/crear-quedada.module').then( m => m.CrearQuedadaPageModule)
+  },
 ];
 
 @NgModule({

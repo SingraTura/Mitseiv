@@ -10,18 +10,34 @@ export class Quedada {
   // tslint:disable-next-line: variable-name
   private _localizacion: Map<string, number>;
   // tslint:disable-next-line: variable-name
-  private _fecha: Date;
+  private _fechaCreacion: Date;
+  // tslint:disable-next-line: variable-name
+  private _fechaEjecucion: Date;
   // tslint:disable-next-line: variable-name
   private _visibilidad: boolean;
+  // tslint:disable-next-line: variable-name
+  private _descripcion: boolean;
 
-  constructor(id, creador, miembros, chat, localizacion, fecha, visibilidad) {
+  constructor(
+    id,
+    creador,
+    miembros,
+    chat,
+    localizacion,
+    fechaCreacion,
+    fechaEjecucion,
+    visibilidad,
+    descripcion
+  ) {
     this._id = id;
     this._creador = creador;
     this._miembros = miembros;
     this._chat = chat;
     this._localizacion = localizacion;
-    this._fecha = fecha;
+    this._fechaCreacion = fechaCreacion;
+    this._fechaEjecucion = fechaEjecucion;
     this._visibilidad = visibilidad;
+    this._descripcion = descripcion;
   }
   public get id(): any {
     return this._id;
@@ -53,16 +69,28 @@ export class Quedada {
   public set localizacion(value: Map<string, number>) {
     this._localizacion = value;
   }
-  public get fecha(): Date {
-    return this._fecha;
+  public get fechaCreacion(): Date {
+    return this._fechaCreacion;
   }
-  public set fecha(value: Date) {
-    this._fecha = value;
+  public set fechaCreacion(value: Date) {
+    this._fechaCreacion = value;
+  }
+  public get fechaEjecucion(): Date {
+    return this._fechaEjecucion;
+  }
+  public set fechaEjecucion(value: Date) {
+    this._fechaEjecucion = value;
   }
   public get visibilidad(): boolean {
     return this._visibilidad;
   }
   public set visibilidad(value: boolean) {
     this._visibilidad = value;
+  }
+  public get descripcion(): boolean {
+    return this._descripcion;
+  }
+  public set descripcion(value: boolean) {
+    this._descripcion = value;
   }
 }

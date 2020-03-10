@@ -22,6 +22,7 @@ import {
 import { AngularFireAuthModule } from '@angular/fire/auth';
 import { ComponentsModule } from './components/component.module';
 import { HttpClientModule } from '@angular/common/http';
+import { FechaPipe } from './pipes/fecha.pipe';
 
 @NgModule({
   declarations: [AppComponent],

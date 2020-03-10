@@ -2,6 +2,7 @@ import { Aleatoriador } from '../util/aleatoriador';
 import { Quedada } from '../class/quedada';
 
 export class QuedadaBuilder {
+  
   // tslint:disable-next-line: variable-name
   private _creador: string;
   // tslint:disable-next-line: variable-name
@@ -11,16 +12,22 @@ export class QuedadaBuilder {
   // tslint:disable-next-line: variable-name
   private _localizacion: Map<string, number>;
   // tslint:disable-next-line: variable-name
-  private _fecha: Date;
+  private _fechaCreacion: Date;
+  // tslint:disable-next-line: variable-name
+  private _fechaEjecucion: Date;
    // tslint:disable-next-line: variable-name
-   private _visibilidad: boolean;
+  private _visibilidad: boolean;
+   // tslint:disable-next-line: variable-name
+  private _descripcion: string;
 
   public restart(): QuedadaBuilder {
     this._miembros = new Array<string>();
     this._chat = new Array<string>();
     this._localizacion = new Map<string, number>();
-    this._fecha = new Date(Date.now());
+    this._fechaCreacion = new Date(Date.now());
+    this._fechaEjecucion = new Date(Date.now());
     this._visibilidad = false;
+    this._descripcion = '';
     return this;
   }
   public build(): Quedada {
@@ -30,8 +37,10 @@ export class QuedadaBuilder {
         this._miembros ,
         this._chat ,
         this._localizacion ,
-        this._fecha,
-        this._visibilidad
+        this._fechaCreacion ,
+        this._fechaEjecucion ,
+        this._visibilidad,
+        this._descripcion
     );
   }
   public buildWithId(id: string): Quedada {
@@ -41,13 +50,19 @@ export class QuedadaBuilder {
         this._miembros ,
         this._chat ,
         this._localizacion ,
-        this._fecha,
-        this._visibilidad
+        this._fechaCreacion ,
+        this._fechaEjecucion ,
+        this._visibilidad,
+        this._descripcion
     );
   }
 
   creador(creador: string): QuedadaBuilder {
     this._creador = creador;
+    return this;
+  }
+  descripcion(descripcion: string): QuedadaBuilder {
+    this._descripcion = descripcion;
     return this;
   }
   miembros(miembros: Array<string>): QuedadaBuilder {
@@ -66,8 +81,12 @@ export class QuedadaBuilder {
     this._visibilidad = visibilidad;
     return this;
   }
-  fecha(fecha: Date): QuedadaBuilder {
-    this._fecha = fecha;
+  fechaCreacion(fechaCreacion: Date): QuedadaBuilder {
+    this._fechaCreacion = fechaCreacion;
+    return this;
+  }
+  fechaEjecucion(fechaEjecucion: Date): QuedadaBuilder {
+    this._fechaEjecucion = fechaEjecucion;
     return this;
   }
 }
