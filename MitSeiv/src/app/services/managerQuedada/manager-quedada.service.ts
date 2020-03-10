@@ -56,7 +56,7 @@ export class ManagerQuedadaService {
       creador: quedada.creador,
       miembros: quedada.miembros,
       chat: quedada.chat,
-      localizacion: quedada.localizacion,
+      // localizacion: quedada.localizacion,
       fecha: quedada.fecha,
       visibilidad: quedada.visibilidad
     });

@@ -1,3 +1,4 @@
+import { ComponentsModule } from './../../components/component.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -13,7 +14,8 @@ import { ListaAmigosPage } from './lista-amigos.page';
     CommonModule,
     FormsModule,
     IonicModule,
-    ListaAmigosPageRoutingModule
+    ListaAmigosPageRoutingModule,
+    ComponentsModule
   ],
   declarations: [ListaAmigosPage]
 })
