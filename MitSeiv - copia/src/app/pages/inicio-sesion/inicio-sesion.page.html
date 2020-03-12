@@ -1,0 +1,21 @@
+<ion-header> </ion-header>
+
+<div class="fondoInicioSesionDos ">
+  <div class="fondoInicioSesion">
+    <div>inicio Sesion</div>
+  </div>
+  <ion-item class="inputP">
+    <ion-label position="floating">Correo Electrónico</ion-label>
+    <ion-input type="text" [(ngModel)]="correo"></ion-input>
+  </ion-item>
+  <ion-item class="inputP">
+    <ion-label position="floating">Contraseña</ion-label>
+    <ion-input type="password" [(ngModel)]="contrasena"></ion-input>
+  </ion-item>
+  <ion-button (click)="iniciarSesion()" expand="block" fill="clear" shape="round" color="block">
+    Entrar
+  </ion-button>
+  <ion-button (click)="registrar()" expand="block" fill="clear" shape="round">
+    Registrar
+  </ion-button>
+</div>

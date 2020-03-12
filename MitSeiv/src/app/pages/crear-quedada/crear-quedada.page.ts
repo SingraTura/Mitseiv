@@ -1,3 +1,4 @@
+import { Router } from '@angular/router';
 import { ManagerUsuarioService } from "./../../services/managerUsuario/manager-usuario.service";
 import { Component, OnInit } from "@angular/core";
 import { ManagerQuedadaService } from "src/app/services/managerQuedada/manager-quedada.service";
@@ -13,7 +14,8 @@ export class CrearQuedadaPage implements OnInit {
   private fecha: any;
   constructor(
     public managerUsuarios: ManagerUsuarioService,
-    public managerQuedadas: ManagerQuedadaService
+    public managerQuedadas: ManagerQuedadaService,
+    public router: Router
   ) {
   }
 
@@ -28,6 +30,8 @@ export class CrearQuedadaPage implements OnInit {
       this.descripcion,
       new Date(this.fecha)
     );
+    this.router.navigate(['timeline']);
+
   }
   valid(): boolean {
     let validDescripcion = false;

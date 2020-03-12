@@ -1,3 +1,5 @@
+import { Router } from '@angular/router';
+import { ManagerUsuarioService } from './../../services/managerUsuario/manager-usuario.service';
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { DataService } from 'src/app/services/data/data.service';
@@ -10,10 +12,15 @@ import { DataService } from 'src/app/services/data/data.service';
 export class MenuComponent implements OnInit {
 
   componentsP: Observable<any>;
-  constructor( private dataService: DataService) { }
+  constructor( private dataService: DataService, private userService: ManagerUsuarioService, public router: Router) { }
 
   ngOnInit() {
     this.componentsP = this.dataService.getMenuOpts();
+  }
+  cerrarSesion() {
+    this.userService.cerrarSesion();
+    this.router.navigate(['inicio-sesion']);
+
   }
 
 }

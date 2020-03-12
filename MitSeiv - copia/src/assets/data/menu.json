@@ -1,0 +1,32 @@
+[
+    {
+      "icon": "people",
+      "name": "Lista de amigos",
+      "redirectTo": "/lista-amigos"
+    },
+    {
+      "icon": "game-controller",
+      "name": "Lista quedadas",
+      "redirectTo": "/lista-quedadas"
+    },
+    {
+      "icon": "megaphone",
+      "name": "Crear quedada",
+      "redirectTo": "/crear-quedada"
+    },
+    {
+      "icon": "pizza",
+      "name": "Solicitudes amistad",
+      "redirectTo": "/solicitudes"
+    },
+    {
+      "icon": "planet",
+      "name": "Solicitudes quedadas",
+      "redirectTo": "/solicitudes-quedadas"
+    },
+    {
+      "icon": "log-out",
+      "name": "Cerrar sesion",
+      "redirectTo": "/inicio-sesion"
+    }
+  ]

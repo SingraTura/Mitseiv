@@ -1,0 +1,27 @@
+.fondoInicioSesion{
+ display: flex;
+ background-color: #03f5f5;
+ height: 60%;
+ width: 90%;
+ align-items: center;
+}
+.fondoInicioSesion div{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    width: 100%;
+    color: black;
+    font-weight: bold;
+}
+.fondoInicioSesionDos{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+}
+.inputP{
+    width: 90%;
+}

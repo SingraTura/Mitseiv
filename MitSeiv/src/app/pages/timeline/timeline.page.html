@@ -1,0 +1,16 @@
+<app-header [tittle]="Timeline"></app-header>
+
+
+<ion-content>
+  <ion-item *ngFor="let quedada of this.quedadas">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>{{ quedada.descripcion }}</ion-card-title>
+        <ion-card-subtitle>{{ quedada.fechaEjecucion|fecha }}</ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-label>Creador: {{ quedada.creador }}</ion-label>  
+      </ion-card-content>
+    </ion-card>
+  </ion-item>
+</ion-content>

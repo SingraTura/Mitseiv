@@ -23,10 +23,5 @@
       "icon": "planet",
       "name": "Solicitudes quedadas",
       "redirectTo": "/solicitudes-quedadas"
-    },
-    {
-      "icon": "log-out",
-      "name": "Cerrar sesion",
-      "redirectTo": "/inicio-sesion"
     }
   ]

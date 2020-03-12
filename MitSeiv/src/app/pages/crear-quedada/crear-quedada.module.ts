@@ -1,4 +1,4 @@
-import { FechaPipe } from './../../pipes/fecha.pipe';
+
 import { ComponentsModule } from './../../components/component.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -18,6 +18,6 @@ import { CrearQuedadaPage } from './crear-quedada.page';
     CrearQuedadaPageRoutingModule,
     ComponentsModule
   ],
-  declarations: [CrearQuedadaPage, FechaPipe]
+  declarations: [CrearQuedadaPage]
 })
 export class CrearQuedadaPageModule {}
