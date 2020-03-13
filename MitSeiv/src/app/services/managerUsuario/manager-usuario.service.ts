@@ -1,15 +1,16 @@
-import { GestorLista } from './../../core/model/util/gestorDeListas';
-import { Injectable } from '@angular/core';
+import { LogicaUsuario } from "./../../core/control/logic/logicUsuario/logica-usuario";
+import { GestorLista } from "./../../core/model/util/gestorDeListas";
+import { Injectable } from "@angular/core";
 import {
   AngularFirestoreCollection,
   AngularFirestore
-} from '@angular/fire/firestore';
-import { map, take } from 'rxjs/operators';
-import { AngularFireAuth } from '@angular/fire/auth';
-import { Observable } from 'rxjs';
-import { Usuario } from 'src/app/core/model/class/usuario';
-import { UsuarioBuilder } from 'src/app/core/model/builder/userBuilder';
-import { BaseDeDatos } from 'src/app/interfaceServicios/baseDeDatos';
+} from "@angular/fire/firestore";
+import { map, take } from "rxjs/operators";
+import { AngularFireAuth } from "@angular/fire/auth";
+import { Observable } from "rxjs";
+import { Usuario } from "src/app/core/model/class/usuario";
+import { UsuarioBuilder } from "src/app/core/model/builder/userBuilder";
+import { BaseDeDatos } from "src/app/interfaceServicios/baseDeDatos";
 
 interface Usuariable {
   id?: any;
@@ -23,21 +24,22 @@ interface Usuariable {
   localizacion: Map<string, number>;
 }
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root"
 })
 export class ManagerUsuarioService implements BaseDeDatos {
+  
   private usuarioActivo: Usuario;
   private usuariosBase: Observable<Usuariable[]>;
   private usuariosColeccion: AngularFirestoreCollection<Usuariable>;
   private usuarios: Usuario[];
   private login: boolean;
-  private gestorLista = new GestorLista();
+  private logic: LogicaUsuario;
   constructor(
     private afs: AngularFirestore,
     private firebaseAuth: AngularFireAuth
   ) {
     this.login = false;
-    this.usuariosColeccion = this.afs.collection<Usuariable>('usuarios');
+    this.usuariosColeccion = this.afs.collection<Usuariable>("usuarios");
     this.usuariosBase = this.usuariosColeccion.snapshotChanges().pipe(
       map(actions => {
         return actions.map(a => {
@@ -50,8 +52,9 @@ export class ManagerUsuarioService implements BaseDeDatos {
     this.usuariosBase.subscribe(
       (res: any) => (this.usuarios = res),
       (err: any) =>
-        console.log('It is a error unexpected from firebase suscribe')
+        console.log("It is a error unexpected from firebase suscribe")
     );
+    this.logic = new LogicaUsuario(this.usuarios);
   }
   public registrar(email: string, contrasena: string): Promise<boolean> {
     return new Promise(response => {
@@ -140,7 +143,7 @@ export class ManagerUsuarioService implements BaseDeDatos {
           response(true);
         })
         .catch(() => {
-          reject('Error al actualizar contraseña');
+          reject("Error al actualizar contraseña");
         });
     });
   }
@@ -153,10 +156,14 @@ export class ManagerUsuarioService implements BaseDeDatos {
     });
   }
   // Gestor Amigos
-  public aceptarSolicitudAmistad(email: string): Promise<boolean> {
+  public aceptarSolicitudAmistad(email: string): Promise<void> {
     return this.capturarUsuarioPorCorreo(email).then(usuario => {
-      this.usuarioActivo.listaAmigos.push(email);
-      usuario.listaAmigos.push(this.usuarioActivo.email);
+      this.logic.aceptarSolicitudAmistad(email, this.obtenerUsuarioActivo(), usuario);
+      return this.actualizarSolicitudAmistad(usuario);
+    });
+  }
+  rechazarSolicitudAmistad(email: string): Promise<void> {
+    return this.capturarUsuarioPorCorreo(email).then(usuario => {
       return this.actualizarSolicitudAmistad(usuario);
     });
   }
@@ -167,7 +174,7 @@ export class ManagerUsuarioService implements BaseDeDatos {
       const emails = [usuario.email, activo.email];
 
       for (let i = 0; i < usuarios.length; i++) {
-        const listaAmigosActualizada = this.gestorLista.eliminarDeLista(
+        const listaAmigosActualizada = this.logic.eliminarDeLista(
           usuarios[i].listaAmigos,
           emails[i]
         );
@@ -179,124 +186,58 @@ export class ManagerUsuarioService implements BaseDeDatos {
       }
     });
   }
-  public actualizarSolicitudAmistad(usuario): Promise<boolean> {
-    return new Promise(resolve => {
-      const activo = this.usuarioActivo;
-      const usuarios = [activo, usuario];
-      const emails = [usuario.email, activo.email];
+  public actualizarSolicitudAmistad(usuario) {
+    const activo = this.usuarioActivo;
+    const usuarios = [activo, usuario];
+    const emails = [usuario.email, activo.email];
 
-      for (let i = 0; i < usuarios.length; i++) {
-        const listaSolicitudesActualizada = this.gestorLista.eliminarDeLista(
-          usuarios[i].solicitudesAmigos,
-          emails[i]
-        );
-        this.actualizarAmigos(
-          usuarios[i].id,
-          usuarios[i].listaAmigos,
-          listaSolicitudesActualizada
-        );
-      }
-      resolve(true);
-    });
+    for (let i = 0; i < usuarios.length; i++) {
+      const listaSolicitudesActualizada = this.logic.eliminarDeLista(
+        usuarios[i].solicitudesAmigos,
+        emails[i]
+      );
+      this.actualizarAmigos(
+        usuarios[i].id,
+        usuarios[i].listaAmigos,
+        listaSolicitudesActualizada
+      );
+    }
   }
-  private actualizarAmigos(id, listaAmigosA, listaSolicitudes) {
-    this.usuariosColeccion.doc(id).update({
-      listaAmigos: listaAmigosA,
-      solicitudesAmigos: listaSolicitudes
-    });
-  }
-  public enviarSolicitudAmistad(email: string): Promise<boolean> {
-    return this.capturarUsuarioPorCorreo(email)
-      .then(usuarioSolicitado => {
-        if (usuarioSolicitado.solicitudesAmigos === undefined) {
-          usuarioSolicitado.solicitudesAmigos = new Array<string>();
-        }
+
+  public enviarSolicitudAmistad(email: string): Promise<void>{
+      return this.capturarUsuarioPorCorreo(email).then(usuarioSolicitado => {
         usuarioSolicitado.solicitudesAmigos.push(this.usuarioActivo.email);
-        const solicitudesAmigosActualizadas =
-          usuarioSolicitado.solicitudesAmigos;
-        this.usuariosColeccion.doc(usuarioSolicitado.id).update({
-          solicitudesAmigos: solicitudesAmigosActualizadas
-        });
-        return true;
-      })
-      .catch(() => {
-        return false;
+        return this.actualizarSolicitudes(usuarioSolicitado);
       });
   }
+
   public comprobarListaAmigos(email: string): Promise<string> {
-    return new Promise((response, reject) => {
-      this.capturarUsuarioPorCorreo(email).then(user => {
-        let found = false;
-        let mensaje: string;
-        const solicitudesAmigos = user.solicitudesAmigos;
-        const solicitudesAmigosActivo = this.usuarioActivo.listaAmigos;
-        const emailPersonal = this.usuarioActivo.email;
-
-        mensaje = email + ' ya es tu amigo.';
-        found = this.filtrarAmigos(
-          mensaje,
-          solicitudesAmigosActivo,
-          email,
-          reject
-        );
-        mensaje = 'Ya le has enviado una peticion a ' + email;
-        found = this.filtrarAmigos(
-          mensaje,
-          solicitudesAmigos,
-          emailPersonal,
-          reject
-        );
-        if (!found) {
-          response('ok');
-        }
-      });
-    });
-  }
-  private filtrarAmigos(
-    mensaje: string,
-    lista: any,
-    email: string,
-    reject: (reason?: any) => void
-  ) {
-    let found: boolean;
-    lista.forEach(amigo => {
-      if (amigo.includes(email)) {
-        found = true;
-        reject(mensaje);
-      }
-    });
-
-    return found;
-  }
-  public rechazarSolicitudAmistad(email: string): Promise<boolean> {
-    return this.capturarUsuarioPorCorreo(email).then(usuario => {
-      return this.actualizarSolicitudAmistad(usuario);
-    });
+    return this.logic.comprobarListaAmigos(email, this.obtenerUsuarioActivo());
   }
   // BloqueCapturaUsuarios
-
+  public obtenerUsuarioActivo(): Usuario {
+    return this.usuarioActivo;
+  }
   public capturarIdUsuarioActivo(): string {
     return this.firebaseAuth.auth.currentUser.uid;
   }
   public capturarUsuario(uid: string): Usuario {
-    let userR: Usuario;
-    for (const user of this.usuarios) {
-      if (user.id === uid) {
-        userR = user;
-      }
-    }
-    return userR;
+    return this.logic.capturarUsuario(uid);
   }
   public capturarUsuarioPorCorreo(email: string): Promise<Usuario> {
-    return new Promise((resolve, reject) => {
-      let userR: Usuario;
-      for (const user of this.usuarios) {
-        if (user.email === email) {
-          userR = user;
-          return resolve(userR);
-        }
-      }
-      reject();
+    return this.logic.capturarUsuarioPorCorreo(email);
+  }
+
+  private actualizarSolicitudes(usuarioSolicitado: any): Promise<void> {
+    return this.usuariosColeccion.doc(usuarioSolicitado.id).update({
+      solicitudesAmigos: usuarioSolicitado.solicitudesAmigos
+    });
+  }
+
+  private actualizarAmigos(id, listaAmigosA, listaSolicitudes) {
+    this.usuariosColeccion.doc(id).update({
+      listaAmigos: listaAmigosA,
+      solicitudesAmigos: listaSolicitudes
     });
   }
 }
