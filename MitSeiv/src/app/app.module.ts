@@ -45,7 +45,7 @@ import { FechaPipe } from './pipes/fecha.pipe';
     AngularFirestore,
     AngularFireAuthModule,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    { provide: BaseDeDatos, useClass: MockBaseService}
+    { provide: BaseDeDatos, useClass: ManagerUsuarioService}
   ],
   bootstrap: [AppComponent]
 })
