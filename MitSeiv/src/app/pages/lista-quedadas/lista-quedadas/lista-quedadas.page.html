@@ -1,9 +1,16 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>lista-quedadas</ion-title>
-  </ion-toolbar>
-</ion-header>
+<app-header [tittle]="ListaQuedadas"></app-header>
+
 
 <ion-content>
-
+  <ion-item *ngFor="let quedada of this.quedadas">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>{{ quedada.descripcion }}</ion-card-title>
+        <ion-card-subtitle>{{ fakePipe(quedada.fechaEjecucion) }}</ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-label>Creador: {{ quedada.creador }}</ion-label>  
+      </ion-card-content>
+    </ion-card>
+  </ion-item>
 </ion-content>

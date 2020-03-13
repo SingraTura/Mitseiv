@@ -102,16 +102,20 @@ export class ManagerQuedadaService {
     });
     return resultado;
   }
-  public obtenerListaMisQuedadas(usuarioActual: string): Array<Quedada> {
-    const resultado = Array<Quedada>();
-    this.quedadas.forEach(quedada => {
-      this.obtenerListaMiembros(quedada.id).forEach((miembro) => {
-        if(miembro === usuarioActual) {
-          resultado.push(quedada);
-        }
-      })
+  public obtenerListaMisQuedadas(
+    usuarioActual: string
+  ): Promise<Array<Quedada>> {
+    return new Promise(resolve => {
+      const resultado = Array<Quedada>();
+      this.quedadas.forEach(quedada => {
+        this.obtenerListaMiembros(quedada.id).forEach(miembro => {
+          if (miembro === usuarioActual) {
+            resultado.push(quedada);
+          }
+        });
+      });
+      resolve(resultado);
     });
-    return resultado;
   }
   public obtenerQuedada(idQuedada: string): Quedada {
     let resultado: Quedada;

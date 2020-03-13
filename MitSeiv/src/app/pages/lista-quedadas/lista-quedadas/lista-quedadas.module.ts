@@ -1,3 +1,5 @@
+
+import { ComponentsModule } from './../../../components/component.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -13,7 +15,8 @@ import { ListaQuedadasPage } from './lista-quedadas.page';
     CommonModule,
     FormsModule,
     IonicModule,
-    ListaQuedadasPageRoutingModule
+    ListaQuedadasPageRoutingModule,
+    ComponentsModule
   ],
   declarations: [ListaQuedadasPage]
 })
