@@ -1,3 +1,4 @@
+import { MockBaseService } from './mocks/mock-base.service';
 import { ManagerUsuarioService } from './services/managerUsuario/manager-usuario.service';
 import { BaseDeDatos } from 'src/app/interfaceServicios/baseDeDatos';
 import { NgModule } from '@angular/core';
@@ -44,7 +45,7 @@ import { FechaPipe } from './pipes/fecha.pipe';
     AngularFirestore,
     AngularFireAuthModule,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    { provide: BaseDeDatos, useClass: ManagerUsuarioService}
+    { provide: BaseDeDatos, useClass: MockBaseService}
   ],
   bootstrap: [AppComponent]
 })

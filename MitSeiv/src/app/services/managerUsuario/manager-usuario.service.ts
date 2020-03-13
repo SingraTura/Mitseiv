@@ -31,7 +31,6 @@ export class ManagerUsuarioService implements BaseDeDatos {
   private usuarioActivo: Usuario;
   private usuariosBase: Observable<Usuariable[]>;
   private usuariosColeccion: AngularFirestoreCollection<Usuariable>;
-  private usuarios: Usuario[];
   private login: boolean;
   private logic: LogicaUsuario;
   constructor(
@@ -50,11 +49,10 @@ export class ManagerUsuarioService implements BaseDeDatos {
       })
     );
     this.usuariosBase.subscribe(
-      (res: any) => (this.usuarios = res),
+      (res: any) => (this.logic = new LogicaUsuario(res)),
       (err: any) =>
         console.log("It is a error unexpected from firebase suscribe")
     );
-    this.logic = new LogicaUsuario(this.usuarios);
   }
   public registrar(email: string, contrasena: string): Promise<boolean> {
     return new Promise(response => {
@@ -87,6 +85,7 @@ export class ManagerUsuarioService implements BaseDeDatos {
   }
   public iniciarSesion(email: string, contrasena: string): Promise<boolean> {
     return new Promise(response => {
+      alert(email + ' ' + contrasena)
       this.firebaseAuth.auth
         .signInWithEmailAndPassword(email, contrasena)
         .then(() => {

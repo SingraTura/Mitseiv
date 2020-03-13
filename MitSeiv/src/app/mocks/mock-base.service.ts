@@ -39,6 +39,8 @@ export class MockBaseService implements BaseDeDatos {
         .listaAmigos(amigosFernando)
         .build()
     );
+
+    this.logic = new LogicaUsuario(this.usuarios);
   }
   public iniciarSesion(email: string, contrasena: string): Promise<boolean> {
     return new Promise(response => {
